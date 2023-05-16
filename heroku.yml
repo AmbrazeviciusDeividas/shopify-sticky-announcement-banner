@@ -3,9 +3,3 @@ build:
     web: Dockerfile
   config:
     SHOPIFY_API_KEY: f75923edc199118c922e0bfc9f87d798
-run:
-  web: php artisan serve --host=0.0.0.0 --port=$PORT
-release:
-  image: web
-  command:
-    - php artisan migrate --force
