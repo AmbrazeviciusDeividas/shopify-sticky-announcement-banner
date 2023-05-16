@@ -1,0 +1,149 @@
+{% assign proxy_url = '/a/x' %}
+<script>
+    async function fetchData() {
+
+        let template = '{{ template.name }}';
+        let shop_name = '{{ shop.name }}'
+
+        const extraData = {
+            page: template,
+            shop_name: shop_name
+        };
+
+        const queryParams = new URLSearchParams(extraData).toString();
+        const urlWithParams = `{{ proxy_url }}?${queryParams}`;
+
+        const response = await fetch(urlWithParams, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        let position = data.position;
+
+        if (data.message !== 'No banner') {
+
+            const container = document.getElementById("sab-main-banner");
+            const sab_container = document.getElementById('sab-container');
+            const div = document.createElement('div');
+
+            if (position === 'top') {
+                container.style.top = '0';
+                sab_container.style.top = '0';
+            }
+            if (position === 'bottom') {
+                container.style.bottom = '1px';
+                sab_container.style.bottom = '1px';
+            }
+
+            div.style.backgroundColor = data.background_color;
+            div.style.borderRadius = data.border_radius + 'px';
+            div.style.padding = `${data.padding_top}px ${data.padding_right}px ${data.padding_bottom}px ${data.padding_left}px`;
+            div.style.position = 'relative';
+            div.style.width = '100%';
+            div.style.display = 'inline-block';
+            div.innerHTML = data.text_content;
+            div.style.zIndex = '9999';
+            if (position === 'top') {
+                div.style.top = '0';
+            }
+            if (position === 'bottom') {
+                div.style.bottom = '1px';
+            }
+            div.style.textAlign = data.text_align;
+            div.style.color = data.text_color;
+            div.style.fontSize = data.text_size + 'px';
+
+            if (data.action_type === 'whole') {
+                const link = document.createElement("a");
+                link.style.transition = 'none';
+                link.className = 'whole-link';
+                link.style.textDecoration = 'none';
+                link.href = data.action_link;
+                link.appendChild(div);
+                container.appendChild(link);
+            } else if (data.action_type === 'button') {
+
+                const button = document.createElement('a');
+                button.innerHTML = data.button_content;
+                button.style.marginLeft = '8px';
+                button.style.fontSize = data.button_content_size;
+                button.style.color = data.button_content_color;
+                button.style.backgroundColor = data.button_background_color;
+                button.style.position = data.button_position;
+                button.style.border = data.button_border;
+                button.style.borderColor = data.button_border_color;
+                button.style.borderWidth = '1px';
+                button.href = data.action_link;
+                button.style.textDecoration = 'none';
+                button.style.padding = `${data.button_spacing_v}px ${data.button_spacing_h}px`;
+                button.style.fontSize = data.button_content_size;
+
+                div.appendChild(button);
+                container.appendChild(div);
+
+            } else {
+                container.appendChild(div);
+            }
+
+            let elHeight = div.offsetHeight;
+            elHeight += parseInt(window.getComputedStyle(div).getPropertyValue('margin-top'));
+            elHeight += parseInt(window.getComputedStyle(div).getPropertyValue('margin-bottom'));
+
+            const el = document.getElementById('sab-container');
+            if(position === 'top'){
+                document.body.style.marginTop = elHeight + "px";
+            } else{
+                document.body.style.marginBottom = elHeight + "px";
+            }
+        }
+    }
+
+    fetchData();
+</script>
+
+<div id="sab-container" class="sticky-announcement-banner-container">
+    <div id="sab-main-banner" class="banner">
+    </div>
+</div>
+
+<style>
+    .sticky-announcement-banner-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        z-index: 9999;
+    }
+
+    .whole-link {
+        width: 100%;
+    }
+
+    #sab-container {
+        width: 100%;
+        position: fixed;
+        z-index: 9999;
+    }
+
+    #sab-main-banner {
+        position: fixed;
+        width: 100%;
+    }
+</style>
+
+
+{% schema %}
+{
+    "name": "Sticky AB Snippet",
+    "target": "body",
+    "javascript": "sab-main.js",
+    "settings": [
+        {
+            "type": "paragraph",
+            "content": "Sticky Announcement Banner! Make sure to enable this snippet to see your work!"
+        }
+    ]
+}
+{% endschema %}

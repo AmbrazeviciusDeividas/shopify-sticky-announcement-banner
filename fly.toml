@@ -1,0 +1,18 @@
+# fly.toml app configuration file generated for shopify-sticky-banner on 2023-05-07T17:27:25+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "shopify-sticky-banner"
+primary_region = "atl"
+[env]
+  PORT = "8081"
+  HOST = "https://shopify-sticky-banner.fly.dev"
+  SHOPIFY_API_KEY = "f75923edc199118c922e0bfc9f87d798"
+  SCOPES = "read_products"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
